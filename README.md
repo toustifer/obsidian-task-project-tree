@@ -68,6 +68,17 @@ npm run dev
 npm run build
 ```
 
+## Releasing
+
+1. Bump version in `manifest.json`, `package.json`, and `versions.json`
+2. Commit and tag:
+   ```bash
+   git add -A && git commit -m "release: x.y.z"
+   git tag x.y.z
+   git push && git push --tags
+   ```
+3. GitHub Actions will automatically build and create the release.
+
 ## License
 
 MIT
