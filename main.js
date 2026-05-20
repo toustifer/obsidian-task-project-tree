@@ -293,47 +293,77 @@ function buildProjectTree(project, documents, markers) {
 }
 
 // src/renderer.ts
-function renderDirectTasks(entries, headingLevel) {
-  const heading = `${"#".repeat(Math.min(headingLevel, 6))} Direct Tasks`;
+var BAR_BLOCKS = 10;
+function progressBar(completed, total) {
+  if (total === 0) {
+    return `${"\u2591".repeat(BAR_BLOCKS)} 0%`;
+  }
+  const percent = Math.round(completed / total * 100);
+  const filled = Math.round(completed / total * BAR_BLOCKS);
+  const empty = BAR_BLOCKS - filled;
+  return `${"\u2588".repeat(filled)}${"\u2591".repeat(empty)} ${percent}%`;
+}
+function progressLine(completed, total) {
+  if (total === 0) {
+    return "`\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591 0%` \u2014 No tasks";
+  }
+  const remaining = total - completed;
+  return `\`${progressBar(completed, total)}\` \u2014 ${completed} / ${total} completed, ${remaining} remaining`;
+}
+function calloutWrap(title, body) {
+  return [
+    `> [!note] ${title}`,
+    ...body.map((line) => line.length > 0 ? `> ${line}` : ">")
+  ];
+}
+function renderDirectTasks(entries) {
   if (entries.length === 0) {
-    return [heading, "- No direct descendant tasks found."];
+    return ["*No direct descendant tasks.*"];
   }
   return [
-    heading,
-    ...entries.map(
-      (entry) => `- \`${entry.path}\` \xB7 ${entry.completed} / ${entry.total}`
-    )
+    "",
+    "| File | Completed | Total | Progress |",
+    "|------|-----------|-------|----------|",
+    ...entries.map((entry) => {
+      const linkPath = entry.path.replace(/\.md$/, "");
+      return `| [[${linkPath}]] | ${entry.completed} | ${entry.total} | \`${progressBar(entry.completed, entry.total)}\` |`;
+    })
   ];
 }
 function renderChildProject(node, headingLevel) {
+  const h = "#".repeat(Math.min(headingLevel, 6));
   const lines = [
-    `${"#".repeat(Math.min(headingLevel, 6))} Child Project: ${node.name}`,
-    `- Progress: ${node.completed} / ${node.total}`,
-    `- Completed: ${node.completed}`,
-    `- Remaining: ${node.remaining}`,
     "",
-    ...renderDirectTasks(node.directEntries, headingLevel + 1)
+    `${h} Child Project: ${node.name}`,
+    "",
+    progressLine(node.completed, node.total)
   ];
+  if (node.directEntries.length > 0) {
+    lines.push(
+      "",
+      `${"#".repeat(Math.min(headingLevel + 1, 6))} Direct Tasks`,
+      ...renderDirectTasks(node.directEntries)
+    );
+  }
   for (const child of node.childProjects) {
-    lines.push("", ...renderChildProject(child, headingLevel + 1));
+    lines.push(...renderChildProject(child, headingLevel + 1));
   }
   return lines;
 }
 function renderProjectOverview(node) {
-  const lines = [
-    GENERATED_SECTION_TITLE,
-    "",
-    `- Total progress: ${node.completed} / ${node.total}`,
-    `- Completed: ${node.completed}`,
-    `- Remaining: ${node.remaining}`,
-    `- Child projects: ${node.childProjects.length}`,
-    "",
-    ...renderDirectTasks(node.directEntries, 3)
-  ];
-  for (const child of node.childProjects) {
-    lines.push("", ...renderChildProject(child, 3));
+  const body = [];
+  body.push(progressLine(node.completed, node.total));
+  if (node.childProjects.length > 0) {
+    body.push("", `Child projects: ${node.childProjects.length}`);
   }
-  return lines.join("\n");
+  if (node.directEntries.length > 0) {
+    body.push("", "### Direct Tasks", ...renderDirectTasks(node.directEntries));
+  }
+  for (const child of node.childProjects) {
+    body.push(...renderChildProject(child, 3));
+  }
+  const wrapped = calloutWrap(GENERATED_SECTION_TITLE, body);
+  return wrapped.join("\n");
 }
 
 // src/overview-note.ts
