@@ -1,0 +1,11 @@
+{
+	"id": "task-project-tree",
+	"name": "Task Project Tree",
+	"version": "0.0.1",
+	"minAppVersion": "1.6.0",
+	"description": "Turn folders into task projects with overview notes and tree-based progress. Right-click any folder to set it as a project, then see live task completion badges in the file explorer.",
+	"author": "Codex",
+	"authorUrl": "https://github.com/toustifer",
+	"fundingUrl": "",
+	"isDesktopOnly": false
+}

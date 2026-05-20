@@ -1,0 +1,23 @@
+.nav-folder-title.task-project-badge-row[data-task-project-badge] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-folder-title.task-project-badge-row[data-task-project-badge] .nav-folder-title-content {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.nav-folder-title.task-project-badge-row[data-task-project-badge]::after {
+  content: attr(data-task-project-badge);
+  margin-left: auto;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.nav-folder-title.task-project-badge-row[data-task-project-empty="true"]::after {
+  color: var(--text-faint);
+}
