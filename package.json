@@ -14,7 +14,7 @@
 		"project",
 		"productivity"
 	],
-	"author": "Codex",
+	"author": "Stifer",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^20.11.0",
