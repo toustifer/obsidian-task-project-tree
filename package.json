@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-task-project-tree",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Turn folders into task projects with overview notes and tree-based progress.",
 	"main": "main.js",
 	"scripts": {
